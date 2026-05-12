@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>가전 견적 페이지</title>
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #16a34a;
+      --green-soft: #ecfdf3;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --sky: #0284c7;
+      --sky-soft: #f0f9ff;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --danger: #dc2626;
+      --shadow: 0 22px 54px rgba(15, 23, 42, .09);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Noto Sans KR", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 6% 0%, rgba(37, 99, 235, .16), transparent 28%),
+        radial-gradient(circle at 100% 8%, rgba(22, 163, 74, .10), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1240px, calc(100% - 34px));
+      margin: 0 auto;
+      padding: 42px 0 72px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.25fr .82fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .glass {
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(255,255,255,.82);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-main {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 34px;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 999px;
+      right: -110px;
+      top: -110px;
+      background: linear-gradient(135deg, rgba(37,99,235,.20), rgba(22,163,74,.16));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -.055em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: #344054;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .summary {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .big-price {
+      margin-top: 10px;
+      font-size: 40px;
+      font-weight: 950;
+      letter-spacing: -.055em;
+    }
+
+    .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .progress-head {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .progress {
+      margin-top: 10px;
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .progress > span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width .24s ease;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .tool-card {
+      flex: 1 1 260px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .045);
+    }
+
+    .tool-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 15px;
+      letter-spacing: -.02em;
+    }
+
+    .segmented {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 14px;
+      background: #f2f4f7;
+      border: 1px solid #e5e7eb;
+      gap: 4px;
+    }
+
+    .segmented button {
+      border: 0;
+      border-radius: 11px;
+      padding: 9px 12px;
+      background: transparent;
+      color: #475467;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(17,24,39,.16);
+    }
+
+    .action-btn {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      color: #111827;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .action-btn.dark {
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .045);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.04em;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      min-width: 78px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      background: var(--green-soft);
+      color: #027a48;
+    }
+
+    .candidate-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e8edf5;
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 14px 28px rgba(15,23,42,.045);
+      transition: .18s ease;
+      overflow: hidden;
+    }
+
+    .product-card.selected {
+      border-color: rgba(37,99,235,.45);
+      box-shadow: 0 18px 38px rgba(37,99,235,.13);
+      transform: translateY(-1px);
+    }
+
+    .product-card.selected::before {
+      content: "선택됨";
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      z-index: 2;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #111827;
+      color: white;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .visual {
+      display: grid;
+      place-items: center;
+      min-height: 148px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255,255,255,.75), transparent 34%),
+        linear-gradient(135deg, #eef2ff, #f8fafc);
+      border: 1px solid #eef2f7;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .visual svg {
+      width: 100%;
+      max-width: 250px;
+      height: 140px;
+      display: block;
+    }
+
+    .product-top {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .radio-wrap {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .radio-wrap input {
+      width: 18px;
+      height: 18px;
+      accent-color: #111827;
+      cursor: pointer;
+    }
+
+    .product-title h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: -.035em;
+    }
+
+    .product-title p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .memo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 12px 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 7px 9px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      color: #344054;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .price-edit {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+      margin: 14px 0;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+    }
+
+    .price-edit label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .price-edit input {
+      width: 100%;
+      border: 1px solid #d0d5dd;
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font-size: 15px;
+      font-weight: 900;
+      color: #111827;
+      background: #fff;
+    }
+
+    .price-edit input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+    }
+
+    .reset-price {
+      border: 1px solid #d0d5dd;
+      background: #fff;
+      border-radius: 12px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 950;
+      color: #344054;
+      white-space: nowrap;
+    }
+
+    .price-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .diff {
+      font-weight: 950;
+    }
+
+    .diff.cheaper { color: #027a48; }
+    .diff.expensive { color: #b42318; }
+    .diff.same { color: #344054; }
+
+    .mini-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mini-detail div {
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      background: #fff;
+    }
+
+    .mini-detail h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: -.02em;
+    }
+
+    .mini-detail ul {
+      margin: 0;
+      padding-left: 17px;
+      color: #475467;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .card-footer a,
+    .card-footer span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .card-footer a {
+      background: #111827;
+      color: #fff;
+    }
+
+    .card-footer span {
+      background: #f2f4f7;
+      color: #475467;
+    }
+
+    .side-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 0 10px 26px rgba(15,23,42,.045);
+      margin-bottom: 16px;
+    }
+
+    .side-card h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: -.035em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    td:last-child, th:last-child {
+      text-align: right;
+      font-weight: 900;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .checklist {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: flex;
+      gap: 9px;
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      flex: 0 0 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .note {
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.55;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero, .layout, .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .candidate-grid, .mini-detail {
+        grid-template-columns: 1fr;
+      }
+      .summary {
+        gap: 18px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 22px, 1240px);
+        padding-top: 26px;
+      }
+      .hero-main, .summary, .panel {
+        padding: 20px;
+        border-radius: 22px;
+      }
+      .big-price {
+        font-size: 32px;
+      }
+      .product-title h3 {
+        font-size: 17px;
+      }
+      .visual {
+        min-height: 126px;
+      }
+      .visual svg {
+        height: 118px;
+      }
+      .price-edit {
+        grid-template-columns: 1fr;
+      }
+      .reset-price {
+        width: 100%;
+      }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .glass, .panel, .product-card, .side-card, .stat { box-shadow: none; }
+      .toolbar, .card-footer a, .reset-price { display: none; }
+      .candidate-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-main glass">
+        <div class="eyebrow">가전 견적 관리 · 이미지/선택 스크립트 포함</div>
+        <h1>혼수 · 입주 가전<br />견적 페이지</h1>
+        <p class="lead">
+          제품 후보를 선택하면 합계와 예산 사용률이 자동으로 바뀝니다. 각 후보의 비교 가격을 직접 수정할 수 있어서
+          쿠폰, 카드할인, 와우할인, 설치비 변동을 바로 반영할 수 있습니다.
+        </p>
+        <div class="chips">
+          <span class="chip">예산 1,000만~1,100만 원</span>
+          <span class="chip">후보 선택 가능</span>
+          <span class="chip">가격 직접 수정 가능</span>
+          <span class="chip">브라우저 저장</span>
+          <span class="chip">외부 이미지 없이 표시</span>
+        </div>
+      </div>
+
+      <aside class="summary glass">
+        <div>
+          <div class="label">현재 선택 합계</div>
+          <div id="totalPrice" class="big-price">-</div>
+          <div id="summarySub" class="sub">선택 상품 기준 합계를 계산 중입니다.</div>
+        </div>
+        <div>
+          <div class="progress-head">
+            <span>예산 사용률</span>
+            <span id="budgetRate">-</span>
+          </div>
+          <div class="progress"><span id="progressBar"></span></div>
+          <div id="budgetRemain" class="sub">예산 잔액 계산 중입니다.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="toolbar">
+      <div class="tool-card">
+        <strong>가격 기준 자동 입력</strong>
+        <div class="segmented" role="group" aria-label="가격 기준">
+          <button type="button" class="active" data-mode="price">다나와 기준가</button>
+          <button type="button" data-mode="benefitPrice">조건부 혜택가</button>
+        </div>
+      </div>
+      <div class="tool-card">
+        <strong>작업</strong>
+        <button type="button" id="saveBtn" class="action-btn dark">현재 선택 저장</button>
+        <button type="button" id="resetBtn" class="action-btn">초기화</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <span>등록 카테고리</span>
+        <strong id="categoryCount">-</strong>
+      </div>
+      <div class="stat">
+        <span>현재 선택 상품</span>
+        <strong id="selectedCount">-</strong>
+      </div>
+      <div class="stat">
+        <span>최저 예산 잔액</span>
+        <strong id="remainMin">-</strong>
+      </div>
+      <div class="stat">
+        <span>최대 예산 잔액</span>
+        <strong id="remainMax">-</strong>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div id="groups"></div>
+
+      <aside>
+        <div class="side-card">
+          <h3>선택 요약</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>선택</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody id="summaryRows"></tbody>
+          </table>
+        </div>
+
+        <div class="side-card">
+          <h3>구매 전 확인</h3>
+          <ul class="checklist">
+            <li>다나와 최저가는 판매처 이동 후 실제 결제 금액을 다시 확인</li>
+            <li>에어컨은 기본설치비 포함 범위와 추가 배관·앵글·타공비 확인</li>
+            <li>TV 벽걸이는 브라켓 포함 여부와 설치 방식 확인</li>
+            <li>냉장고는 반입 동선, 폭·높이·깊이, 문 열림 여유 확인</li>
+            <li>조건부 혜택가는 카드·멤버십·쿠폰 적용 가능 여부 확인</li>
+          </ul>
+        </div>
+
+        <div class="note">
+          제품 이미지는 외부 쇼핑몰 이미지가 깨지는 문제를 피하려고 파일 안에 포함된 SVG 일러스트로 넣었습니다.
+          실제 제품 사진이 필요한 경우 각 상품 이미지 URL로 교체하면 됩니다.
+        </div>
+      </aside>
+    </section>
+
+    <p class="footer">마지막 업데이트: 2026-05-12 · 이미지/후보 선택/가격 수정 스크립트 추가</p>
+  </main>
+
+  <script>
+    const QUOTE_DATA = {"budgetMin": 10000000, "budgetMax": 11000000, "groups": [{"id": "washer", "label": "워시 콤보", "selected": 0, "accent": "blue", "items": [{"brand": "Samsung", "name": "삼성전자 비스포크 AI 콤보 WD80F25CHW 기본형", "shortName": "비스포크 AI 콤보", "price": 2571950, "benefitPrice": 2571950, "url": "https://prod.danawa.com/info/?pcode=92186636", "kind": "washer", "tags": ["세탁 25kg", "건조 15kg", "인버터 히트펌프", "에너지 1등급"], "pros": ["세탁·건조 일체형", "고용량 구성", "자동투입·스팀살균·자동세척"], "cons": ["기본형이라 수납함 미포함", "판매처별 설치 조건 확인 필요"], "memo": "견적 반영"}]}, {"id": "tv", "label": "TV", "selected": 0, "accent": "purple", "items": [{"brand": "Hisense", "name": "하이센스 65U7N 벽걸이", "shortName": "65U7N", "price": 759220, "benefitPrice": 693770, "url": "https://prod.danawa.com/info/?pcode=71424017", "kind": "tv", "tags": ["65인치", "미니LED", "4K UHD", "144Hz", "HDMI 2.1", "VRR", "Google TV"], "pros": ["100만 원 이하 화질·밝기·게이밍 스펙 우수", "조건부 혜택가 적용 시 가격 경쟁력 높음"], "cons": ["에너지효율 4등급", "삼성/LG 대비 A/S 체감 안정성 확인 필요"], "memo": "1순위"}, {"brand": "Samsung", "name": "삼성전자 QLED KQ65QF7SAFXKR 벽걸이", "shortName": "QLED QF7S", "price": 995890, "benefitPrice": 995890, "url": "https://prod.danawa.com/info/?pcode=97363745", "kind": "tv", "tags": ["65인치", "QLED", "4K UHD", "60Hz", "에너지 1등급", "HDR10+"], "pros": ["브랜드·A/S 안정성 우선", "100만 원 내외 QLED 후보"], "cons": ["60Hz라 게임 성능은 하이센스보다 약함"], "memo": "삼성 대안"}, {"brand": "LG", "name": "LG전자 울트라HD 65UT8300NNA 벽걸이", "shortName": "65UT8300", "price": 1161320, "benefitPrice": 1161320, "url": "https://prod.danawa.com/info/?pcode=58114922", "kind": "tv", "tags": ["65인치", "LED", "4K UHD", "60Hz", "에너지 1등급", "webOS"], "pros": ["LG A/S와 사용 편의성", "안정적인 브랜드 선택지"], "cons": ["100만 원 초과", "화질·주사율 대비 가성비는 약함"], "memo": "LG 대안"}]}, {"id": "fridge", "label": "4도어 냉장고", "selected": 0, "accent": "green", "items": [{"brand": "LG", "name": "LG전자 오브제컬렉션 T875MHE111 전국무료", "shortName": "T875MHE111", "price": 1998970, "benefitPrice": 1954140, "url": "https://prod.danawa.com/info/?pcode=73074008", "kind": "fridge", "tags": ["870L", "4도어", "1등급", "매직스페이스", "오토클로징", "크림화이트+베이지"], "pros": ["매직스페이스 포함", "1등급", "색상 무난"], "cons": ["복지할인 지원사업 미반영", "네이처 메탈 재질", "도서산간 추가비 가능"], "memo": "선택"}, {"brand": "LG", "name": "LG전자 오브제컬렉션 H875GBB011 전국무료", "shortName": "H875GBB011", "price": 1953560, "benefitPrice": 1953560, "url": "https://prod.danawa.com/info/?pcode=94201418", "kind": "fridge", "tags": ["870L", "4도어", "1등급", "미스트 무광글라스", "홈바 없음", "오토클로징"], "pros": ["무광글라스 재질", "1등급", "매직스페이스 불필요하면 균형 좋음"], "cons": ["매직스페이스 없음", "선택 모델보다 높이 확인 필요"], "memo": "디자인형"}, {"brand": "LG", "name": "LG전자 T873MEE012 일반설치", "shortName": "T873MEE012", "price": 1719300, "benefitPrice": 1719300, "url": "https://prod.danawa.com/info/?pcode=97568069", "kind": "fridge", "tags": ["870L", "4도어", "2등급", "홈바 없음", "네이처 메탈"], "pros": ["가격 최저", "기본 4도어 냉장고로 충분"], "cons": ["1등급 아님", "매직스페이스 없음", "디자인 옵션 약함"], "memo": "가격형"}, {"brand": "LG", "name": "LG전자 T875MKE111 전국무료", "shortName": "T875MKE111", "price": 1906150, "benefitPrice": 1906150, "url": "https://prod.danawa.com/info/?pcode=94029146", "kind": "fridge", "tags": ["870L", "4도어", "1등급", "매직스페이스", "클레이핑크+베이지"], "pros": ["매직스페이스 포함 모델 중 가격 좋음", "1등급"], "cons": ["색상 호불호 가능", "기존 선택 색상보다 덜 무난할 수 있음"], "memo": "매직스페이스 가격형"}]}, {"id": "aircon", "label": "에어컨", "selected": 0, "accent": "sky", "items": [{"brand": "LG", "name": "LG전자 휘센 오브제컬렉션 뷰 1시리즈 FQ17FU1BC2 기본설치비 포함", "shortName": "FQ17FU1BC2", "price": 1801750, "benefitPrice": 1801750, "url": "https://prod.danawa.com/info/?pcode=89612567", "kind": "aircon", "tags": ["2in1", "17+6평", "2025년형", "AI운전", "AI건조", "AI열교환기세척", "간접냉방"], "pros": ["17+6평 2in1 기준 가격·기능 균형 좋음", "간접냉방 포함", "AI건조·열교환기세척"], "cons": ["공식인증 설치 옵션은 별도 가격", "배관·앵글·실외기 위치 추가비 가능"], "memo": "선택"}, {"brand": "Samsung", "name": "삼성전자 비스포크 무풍 클래식 AF70F17D11WRS 전국 기본설치비 포함", "shortName": "AF70F17D11WRS", "price": 1886000, "benefitPrice": 1686000, "url": "https://prod.danawa.com/info/?pcode=122620048", "kind": "aircon", "tags": ["2in1", "17+6평", "2025년형", "무풍", "AI건조", "에너지 3등급"], "pros": ["무풍 선호 시 좋은 대안", "카드 조건부 혜택가가 낮음"], "cons": ["일반 최저가는 LG보다 높음", "카드 혜택 조건 확인 필요"], "memo": "삼성 무풍 대안"}, {"brand": "LG", "name": "LG전자 휘센 오브제컬렉션 쿨 1시리즈 FQ17FC1ED2 기본설치비 포함", "shortName": "FQ17FC1ED2", "price": 1782650, "benefitPrice": 1760524, "url": "", "kind": "aircon", "tags": ["2in1", "17+6평", "2025년형", "AI건조", "열교환기세척"], "pros": ["LG 2in1 중 가격형", "선택 모델보다 약간 저렴"], "cons": ["간접냉방·세부 기능은 선택 모델 쪽이 나음"], "memo": "LG 가격형"}, {"brand": "Samsung", "name": "삼성전자 Q9000 AF60F17D11WRS 전국 기본설치비 포함", "shortName": "AF60F17D11WRS", "price": 1819670, "benefitPrice": 1765930, "url": "https://prod.danawa.com/info/?pcode=122620035", "kind": "aircon", "tags": ["2in1", "17+6평", "2025년형", "AI건조", "무풍 없음"], "pros": ["삼성 가격형", "기본 기능 위주면 무난"], "cons": ["무풍 없음", "LG 선택 모델과 가격 차이가 크지 않음"], "memo": "삼성 가격형"}]}]};
+    const STORAGE_KEY = "home_appliance_quote_v2";
+    let state = {
+      mode: "price",
+      selected: Object.fromEntries(QUOTE_DATA.groups.map(group => [group.id, group.selected || 0])),
+      prices: {}
+    };
+
+    const formatWon = (value) => {
+      const num = Number(value || 0);
+      return num.toLocaleString("ko-KR") + "원";
+    };
+
+    const parsePrice = (value) => {
+      const parsed = Number(String(value || "").replace(/[^0-9]/g, ""));
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const keyOf = (groupId, index) => `${groupId}:${index}`;
+
+    const defaultPrice = (item) => {
+      const key = state.mode === "benefitPrice" ? "benefitPrice" : "price";
+      return Number(item[key] || item.price || 0);
+    };
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (!saved) return;
+        state = {
+          mode: saved.mode || state.mode,
+          selected: { ...state.selected, ...(saved.selected || {}) },
+          prices: saved.prices || {}
+        };
+      } catch (error) {
+        console.warn("저장된 견적을 불러오지 못했습니다.", error);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function clearState() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = {
+        mode: "price",
+        selected: Object.fromEntries(QUOTE_DATA.groups.map(group => [group.id, group.selected || 0])),
+        prices: {}
+      };
+      render();
+    }
+
+    function productVisual(kind, brand, shortName) {
+      const safeBrand = escapeHtml(brand || "");
+      const safeName = escapeHtml(shortName || "");
+      if (kind === "tv") {
+        return `
+          <svg viewBox="0 0 260 150" role="img" aria-label="${safeName} 이미지">
+            <defs>
+              <linearGradient id="tvScreen" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#111827"/>
+                <stop offset="45%" stop-color="#1e3a8a"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+            </defs>
+            <rect x="30" y="20" width="200" height="104" rx="12" fill="#111827"/>
+            <rect x="39" y="29" width="182" height="84" rx="8" fill="url(#tvScreen)"/>
+            <circle cx="190" cy="48" r="28" fill="#60a5fa" opacity=".45"/>
+            <path d="M75 95 C105 68, 139 110, 178 74" fill="none" stroke="#facc15" stroke-width="5" opacity=".85"/>
+            <rect x="115" y="125" width="30" height="9" rx="3" fill="#4b5563"/>
+            <rect x="88" y="134" width="84" height="6" rx="3" fill="#111827"/>
+            <text x="130" y="142" text-anchor="middle" fill="#64748b" font-size="10" font-weight="700">${safeBrand}</text>
+          </svg>`;
+      }
+
+      if (kind === "fridge") {
+        return `
+          <svg viewBox="0 0 260 150" role="img" aria-label="${safeName} 이미지">
+            <defs>
+              <linearGradient id="fridgeBody" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#fff7ed"/>
+                <stop offset="55%" stop-color="#e5e7eb"/>
+                <stop offset="100%" stop-color="#d1d5db"/>
+              </linearGradient>
+            </defs>
+            <rect x="74" y="12" width="112" height="128" rx="14" fill="url(#fridgeBody)" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M130 14 V140" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M75 75 H185" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="139" y="34" width="36" height="28" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="157" y="52" text-anchor="middle" fill="#475467" font-size="8" font-weight="800">Magic</text>
+            <circle cx="113" cy="60" r="3" fill="#94a3b8"/>
+            <circle cx="147" cy="60" r="3" fill="#94a3b8"/>
+            <text x="130" y="146" text-anchor="middle" fill="#64748b" font-size="10" font-weight="700">${safeBrand}</text>
+          </svg>`;
+      }
+
+      if (kind === "aircon") {
+        return `
+          <svg viewBox="0 0 260 150" role="img" aria-label="${safeName} 이미지">
+            <defs>
+              <linearGradient id="acBody" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#dbeafe"/>
+              </linearGradient>
+            </defs>
+            <rect x="42" y="22" width="120" height="38" rx="14" fill="url(#acBody)" stroke="#bfdbfe" stroke-width="2"/>
+            <path d="M60 50 H145" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+            <path d="M70 70 C73 82, 60 89, 67 101" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+            <path d="M104 70 C107 82, 94 89, 101 101" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+            <path d="M138 70 C141 82, 128 89, 135 101" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+            <rect x="173" y="42" width="44" height="86" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="184" y="55" width="22" height="48" rx="8" fill="#e0f2fe"/>
+            <circle cx="195" cy="81" r="10" fill="#38bdf8" opacity=".45"/>
+            <text x="130" y="144" text-anchor="middle" fill="#64748b" font-size="10" font-weight="700">${safeBrand}</text>
+          </svg>`;
+      }
+
+      return `
+        <svg viewBox="0 0 260 150" role="img" aria-label="${safeName} 이미지">
+          <defs>
+            <linearGradient id="washerBody" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#e5e7eb"/>
+            </linearGradient>
+          </defs>
+          <rect x="76" y="10" width="108" height="132" rx="18" fill="url(#washerBody)" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="93" y="25" width="74" height="14" rx="7" fill="#f1f5f9"/>
+          <circle cx="130" cy="85" r="36" fill="#111827"/>
+          <circle cx="130" cy="85" r="27" fill="#dbeafe"/>
+          <path d="M106 87 C119 76, 139 101, 154 84" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+          <text x="130" y="146" text-anchor="middle" fill="#64748b" font-size="10" font-weight="700">${safeBrand}</text>
+        </svg>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function groupPrice(group, index) {
+      const item = group.items[index];
+      const key = keyOf(group.id, index);
+      if (state.prices[key] !== undefined) return Number(state.prices[key]) || 0;
+      return defaultPrice(item);
+    }
+
+    function render() {
+      document.querySelectorAll("[data-mode]").forEach(button => {
+        button.classList.toggle("active", button.dataset.mode === state.mode);
+      });
+
+      const groupsContainer = document.getElementById("groups");
+      groupsContainer.innerHTML = QUOTE_DATA.groups.map(group => renderGroup(group)).join("");
+
+      attachDynamicEvents();
+      updateTotals();
+      saveState();
+    }
+
+    function renderGroup(group) {
+      const selectedIndex = state.selected[group.id] ?? group.selected ?? 0;
+      return `
+        <section class="panel" data-group-panel="${group.id}">
+          <div class="section-head">
+            <div>
+              <h2>${escapeHtml(group.label)}</h2>
+              <p>후보를 선택하거나 비교 가격을 수정하면 전체 합계가 자동으로 바뀝니다.</p>
+            </div>
+            <span class="pill">${group.items.length}개 후보</span>
+          </div>
+          <div class="candidate-grid">
+            ${group.items.map((item, index) => renderCard(group, item, index, selectedIndex)).join("")}
+          </div>
+        </section>`;
+    }
+
+    function renderCard(group, item, index, selectedIndex) {
+      const selected = Number(selectedIndex) === index;
+      const key = keyOf(group.id, index);
+      const priceValue = state.prices[key] !== undefined ? state.prices[key] : defaultPrice(item);
+      const href = item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">상품 보기</a>` : `<span>링크 미등록</span>`;
+      return `
+        <article class="product-card ${selected ? "selected" : ""}" data-card="${group.id}:${index}">
+          <div class="visual">
+            ${productVisual(item.kind, item.brand, item.shortName)}
+          </div>
+
+          <div class="product-top">
+            <label class="radio-wrap">
+              <input type="radio" name="select-${group.id}" data-select-group="${group.id}" data-select-index="${index}" ${selected ? "checked" : ""} />
+              <span class="product-title">
+                <h3>${escapeHtml(item.name)}</h3>
+                <p>${escapeHtml(item.brand)} · ${escapeHtml(group.label)}</p>
+              </span>
+            </label>
+            <span class="memo">${escapeHtml(item.memo || "후보")}</span>
+          </div>
+
+          <div class="tags">
+            ${item.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+
+          <div class="price-edit">
+            <div>
+              <label for="price-${group.id}-${index}">비교 가격</label>
+              <input
+                id="price-${group.id}-${index}"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                step="1000"
+                value="${priceValue}"
+                data-price-group="${group.id}"
+                data-price-index="${index}"
+              />
+            </div>
+            <button type="button" class="reset-price" data-reset-price="${group.id}:${index}">기준가 복원</button>
+          </div>
+
+          <div class="price-meta">
+            <span>다나와 기준가 ${formatWon(item.price)}</span>
+            <span>조건부 혜택가 ${formatWon(item.benefitPrice || item.price)}</span>
+            <span class="diff same" data-diff="${group.id}:${index}">-</span>
+          </div>
+
+          <div class="mini-detail">
+            <div>
+              <h4>장점</h4>
+              <ul>${item.pros.map(text => `<li>${escapeHtml(text)}</li>`).join("")}</ul>
+            </div>
+            <div>
+              <h4>주의</h4>
+              <ul>${item.cons.map(text => `<li>${escapeHtml(text)}</li>`).join("")}</ul>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span>${formatWon(priceValue)}</span>
+            ${href}
+          </div>
+        </article>`;
+    }
+
+    function attachDynamicEvents() {
+      document.querySelectorAll("[data-select-group]").forEach(input => {
+        input.addEventListener("change", () => {
+          state.selected[input.dataset.selectGroup] = Number(input.dataset.selectIndex);
+          updateTotals();
+          refreshSelectedStyles();
+          saveState();
+        });
+      });
+
+      document.querySelectorAll("[data-price-group]").forEach(input => {
+        input.addEventListener("input", () => {
+          const key = keyOf(input.dataset.priceGroup, input.dataset.priceIndex);
+          state.prices[key] = parsePrice(input.value);
+          updateTotals();
+          saveState();
+        });
+      });
+
+      document.querySelectorAll("[data-reset-price]").forEach(button => {
+        button.addEventListener("click", () => {
+          const [groupId, indexText] = button.dataset.resetPrice.split(":");
+          const index = Number(indexText);
+          const group = QUOTE_DATA.groups.find(item => item.id === groupId);
+          const item = group.items[index];
+          const key = keyOf(groupId, index);
+          delete state.prices[key];
+          const input = document.querySelector(`[data-price-group="${groupId}"][data-price-index="${index}"]`);
+          if (input) input.value = defaultPrice(item);
+          updateTotals();
+          saveState();
+        });
+      });
+    }
+
+    function refreshSelectedStyles() {
+      document.querySelectorAll("[data-card]").forEach(card => {
+        const [groupId, indexText] = card.dataset.card.split(":");
+        card.classList.toggle("selected", Number(indexText) === Number(state.selected[groupId]));
+      });
+    }
+
+    function updateTotals() {
+      let total = 0;
+      const rows = [];
+
+      QUOTE_DATA.groups.forEach(group => {
+        const selectedIndex = Number(state.selected[group.id] ?? 0);
+        const item = group.items[selectedIndex];
+        const price = groupPrice(group, selectedIndex);
+        total += price;
+        rows.push({ group, item, price });
+      });
+
+      const rateMin = total / QUOTE_DATA.budgetMin * 100;
+      const rateMax = total / QUOTE_DATA.budgetMax * 100;
+      const remainMin = QUOTE_DATA.budgetMin - total;
+      const remainMax = QUOTE_DATA.budgetMax - total;
+
+      document.getElementById("totalPrice").textContent = formatWon(total);
+      document.getElementById("summarySub").textContent = `${rows.length}개 카테고리 선택 기준입니다. 가격 입력값을 수정하면 즉시 반영됩니다.`;
+      document.getElementById("budgetRate").textContent = `${rateMin.toFixed(1)}% ~ ${rateMax.toFixed(1)}%`;
+      document.getElementById("progressBar").style.width = Math.min(rateMin, 100).toFixed(1) + "%";
+      document.getElementById("budgetRemain").textContent = `1,000만 원 기준 잔액 ${formatWon(remainMin)}, 1,100만 원 기준 잔액 ${formatWon(remainMax)}`;
+      document.getElementById("categoryCount").textContent = `${QUOTE_DATA.groups.length}개`;
+      document.getElementById("selectedCount").textContent = `${rows.length}개`;
+      document.getElementById("remainMin").textContent = formatWon(remainMin);
+      document.getElementById("remainMax").textContent = formatWon(remainMax);
+
+      document.getElementById("summaryRows").innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.group.label)}</td>
+          <td>${escapeHtml(row.item.shortName || row.item.name)}</td>
+          <td>${formatWon(row.price)}</td>
+        </tr>
+      `).join("") + `
+        <tr>
+          <td><strong>합계</strong></td>
+          <td></td>
+          <td>${formatWon(total)}</td>
+        </tr>
+      `;
+
+      updateDiffLabels();
+    }
+
+    function updateDiffLabels() {
+      QUOTE_DATA.groups.forEach(group => {
+        const selectedIndex = Number(state.selected[group.id] ?? 0);
+        const selectedPrice = groupPrice(group, selectedIndex);
+
+        group.items.forEach((item, index) => {
+          const label = document.querySelector(`[data-diff="${group.id}:${index}"]`);
+          const input = document.querySelector(`[data-price-group="${group.id}"][data-price-index="${index}"]`);
+          if (!label) return;
+          const price = input ? parsePrice(input.value) : groupPrice(group, index);
+          const diff = price - selectedPrice;
+          label.classList.remove("cheaper", "expensive", "same");
+
+          if (index === selectedIndex) {
+            label.textContent = "현재 선택";
+            label.classList.add("same");
+          } else if (diff < 0) {
+            label.textContent = `선택 대비 -${formatWon(Math.abs(diff))}`;
+            label.classList.add("cheaper");
+          } else if (diff > 0) {
+            label.textContent = `선택 대비 +${formatWon(diff)}`;
+            label.classList.add("expensive");
+          } else {
+            label.textContent = "선택과 동일";
+            label.classList.add("same");
+          }
+        });
+      });
+    }
+
+    document.querySelectorAll("[data-mode]").forEach(button => {
+      button.addEventListener("click", () => {
+        state.mode = button.dataset.mode;
+        state.prices = {};
+        render();
+      });
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      saveState();
+      const button = document.getElementById("saveBtn");
+      const original = button.textContent;
+      button.textContent = "저장 완료";
+      setTimeout(() => button.textContent = original, 1100);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (confirm("선택과 수정 가격을 초기화할까요?")) {
+        clearState();
+      }
+    });
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
